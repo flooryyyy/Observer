@@ -192,7 +192,9 @@ There are a few ways to get Observer up and running with local inference. I reco
 
 [![Download App](https://img.shields.io/badge/⬇️_Download-Latest_Release-blue?style=for-the-badge&color=2196F3)](https://github.com/Roy3838/Observer/releases/latest/)
 
-Download Ollama for the best compatibility. 
+Download Ollama for the best compatibility.
+
+> **Linux/Wayland Users:** The AppImage now includes native Wayland support! The application will automatically detect and use Wayland when available, falling back to X11 if needed. No additional configuration required. 
 
 Observer can connect directly to any server that provides a `v1/chat/completions` endpoint.
 Set the `Custom Model Server URL` on the App to vLLM, llama.cpp or any OpenAI compatible endpoint if not using Ollama.
