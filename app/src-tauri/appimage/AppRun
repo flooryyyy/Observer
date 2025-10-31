@@ -4,27 +4,25 @@
 # Get the directory where this AppImage is located
 APPDIR="$(dirname "$(readlink -f "$0")")"
 
-# Enable Wayland support for GTK and other libraries
-# These environment variables tell the application to prefer Wayland over X11
-export GDK_BACKEND=wayland
-export QT_QPA_PLATFORM=wayland
-export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
-
-# If Wayland is not available, fall back to X11
-if [ -z "$WAYLAND_DISPLAY" ] && [ -n "$DISPLAY" ]; then
+# Detect if we're running under Wayland
+# Check if WAYLAND_DISPLAY is set and the socket actually exists
+if [ -n "$WAYLAND_DISPLAY" ] && [ -e "${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}" ]; then
+    # Enable Wayland support for GTK and other libraries
+    export GDK_BACKEND=wayland
+    export QT_QPA_PLATFORM=wayland
+    # Ensure EGL uses Wayland platform - this fixes the EGL_BAD_PARAMETER error
+    export EGL_PLATFORM=wayland
+    echo "Running in Wayland mode"
+elif [ -n "$DISPLAY" ]; then
+    # Fall back to X11
     export GDK_BACKEND=x11
     export QT_QPA_PLATFORM=xcb
-fi
-
-# WebKit/WRY-specific Wayland support
-# These tell WebKitGTK to use Wayland rendering
-export WEBKIT_DISABLE_COMPOSITING_MODE=1
-
-# Enable hardware acceleration on Wayland when available
-if [ -n "$WAYLAND_DISPLAY" ]; then
-    export MOZ_ENABLE_WAYLAND=1
-    # Ensure EGL uses Wayland platform
+    echo "Running in X11 mode"
+else
+    # No display server detected, try Wayland first
+    export GDK_BACKEND=wayland
     export EGL_PLATFORM=wayland
+    echo "No display server detected, attempting Wayland"
 fi
 
 # Run the actual application binary
