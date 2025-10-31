@@ -1,0 +1,31 @@
+#!/bin/bash
+# Custom AppRun script for Observer AI with native Wayland support
+
+# Get the directory where this AppImage is located
+APPDIR="$(dirname "$(readlink -f "$0")")"
+
+# Enable Wayland support for GTK and other libraries
+# These environment variables tell the application to prefer Wayland over X11
+export GDK_BACKEND=wayland
+export QT_QPA_PLATFORM=wayland
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
+
+# If Wayland is not available, fall back to X11
+if [ -z "$WAYLAND_DISPLAY" ] && [ -n "$DISPLAY" ]; then
+    export GDK_BACKEND=x11
+    export QT_QPA_PLATFORM=xcb
+fi
+
+# WebKit/WRY-specific Wayland support
+# These tell WebKitGTK to use Wayland rendering
+export WEBKIT_DISABLE_COMPOSITING_MODE=1
+
+# Enable hardware acceleration on Wayland when available
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    export MOZ_ENABLE_WAYLAND=1
+    # Ensure EGL uses Wayland platform
+    export EGL_PLATFORM=wayland
+fi
+
+# Run the actual application binary
+exec "$APPDIR/usr/bin/app" "$@"
