@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Observer
+Comment=Local Micro-Agents That Observe, Log and React
+Exec=env GDK_BACKEND=wayland observer %u
+Icon=observer
+Terminal=false
+Categories=Utility;Development;
+Keywords=AI;Agent;LLM;Automation;
+StartupWMClass=Observer
+StartupNotify=true

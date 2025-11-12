@@ -216,7 +216,7 @@ if(response.includes("word")){
 
 There are a few ways to get Observer up and running with local inference. I recommend the Observer App. 
 
-## Option 1: Just Install the Desktop App with any OpenAI compatible endpoint (Ollama, llama.cpp, vLLM)
+## Option 1: Just Install the Desktop App with any OpenAI compatible endpoint (Ollama, llama.cpp, vLLM, llama-swap)
 
 Download the Official App:
 
@@ -224,8 +224,14 @@ Download the Official App:
 
 Download Ollama for the best compatibility. Observer can connect directly to any server that provides a `v1/chat/completions` endpoint.
 
-### vLLM, llama.cpp, LMStudio etc: 
-Set the `Custom Model Server URL` on the App to any OpenAI compatible endpoint if not using Ollama.
+### vLLM, llama.cpp, LMStudio, llama-swap, etc: 
+Set the `Custom OpenAI-Compatible API Server` on the App to any OpenAI compatible endpoint if not using Ollama. The app supports any service that implements the OpenAI API format, including:
+- **Ollama** (http://localhost:11434)
+- **llama.cpp server** 
+- **vLLM**
+- **LM Studio**
+- **llama-swap**
+- Any other OpenAI-compatible inference server
 
 NOTE: Your browser app sends the request to `localhost:3838` which the ObserverApp proxies to your `Custom Model Server URL`, this is because of CORS. 
 
