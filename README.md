@@ -16,6 +16,10 @@ Build powerful micro-agents that observe your digital world, remember what matte
 ## 🔗 Links
  [Website](https://observer-ai.com) | [WebApp](https://app.observer-ai.com) | [YouTube](https://www.youtube.com/@Observer-AI) | [Tiktok](https://www.tiktok.com/@observerai) | [Twitter](https://x.com/AppObserverAI)
 
+## 📚 Documentation
+- [OpenAI-Compatible Endpoints Guide](OPENAI_ENDPOINTS.md) - How to connect to Ollama, llama-swap, and other compatible APIs
+- [Wayland Support Guide](WAYLAND.md) - Running Observer natively under Wayland on Linux
+
 ---
 
 ## 👁️ How Observer Agents Work
