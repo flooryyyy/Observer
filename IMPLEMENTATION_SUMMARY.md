@@ -36,17 +36,17 @@ The Observer application already had the technical capability to support custom 
 
 ### 2. Native Wayland Support ✅
 
-Implemented native Wayland support for Linux desktop environments to ensure Observer runs under Wayland instead of XWayland.
+Verified and documented native Wayland support for Linux desktop environments. Observer runs under Wayland automatically through GTK's built-in support.
 
 **Changes Made:**
 
 #### Desktop Entry (`app/src-tauri/Observer.desktop`)
-Created a desktop entry file that sets the `GDK_BACKEND=wayland` environment variable:
+Created a desktop entry file for proper .deb package integration:
 ```desktop
-Exec=env GDK_BACKEND=wayland observer %u
+Exec=observer %u
 ```
 
-This ensures that when Observer is launched from the desktop environment, it uses the native Wayland backend instead of falling back to XWayland.
+The desktop entry allows Observer to be launched from application menus and ensures proper integration with the desktop environment.
 
 #### Tauri Configuration (`app/src-tauri/tauri.conf.json`)
 Added Linux bundle configuration to use the custom desktop template:
@@ -59,15 +59,12 @@ Added Linux bundle configuration to use the custom desktop template:
 ```
 
 #### Build Script (`build.sh`)
-Modified the build script to launch with Wayland:
-```bash
-GDK_BACKEND=wayland ./src-tauri/target/release/app
-```
+No changes needed - Observer automatically uses Wayland when running in a Wayland session through GTK's auto-detection.
 
 #### Documentation
-Created **WAYLAND.md** - A comprehensive 3,300+ word guide covering:
+Created **WAYLAND.md** - A comprehensive guide covering:
 - What Wayland is and why it matters
-- How Observer supports Wayland
+- How Observer supports Wayland through GTK
 - How to run from command line with Wayland
 - How to verify Wayland usage (not XWayland)
 - Fallback to X11 when needed
@@ -87,9 +84,9 @@ Created **WAYLAND.md** - A comprehensive 3,300+ word guide covering:
 
 **For Wayland Support:**
 - Tauri 2.x uses GTK which has built-in Wayland support via `gdkwayland`
-- The `GDK_BACKEND` environment variable tells GTK to prefer Wayland
+- GTK automatically detects the session type and uses the appropriate backend
 - Falls back to X11 automatically if Wayland is unavailable
-- No changes to Rust code needed - just configuration
+- No changes to Rust code needed - just configuration and documentation
 
 ### Security
 
@@ -132,12 +129,12 @@ Created **WAYLAND.md** - A comprehensive 3,300+ word guide covering:
 | `app/src/components/ConnectionSettingsModal.tsx` | +12, -3 | Enhanced UI labels and examples |
 | `README.md` | +15, -3 | Added docs links and endpoint examples |
 | `app/src-tauri/tauri.conf.json` | +6, -1 | Added Linux bundle config |
-| `app/src-tauri/Observer.desktop` | +11 | Created desktop entry with Wayland |
-| `build.sh` | +2, -1 | Added Wayland environment variable |
+| `app/src-tauri/Observer.desktop` | +11 | Created desktop entry for Linux |
+| `build.sh` | 0 | No changes (Wayland auto-detected) |
 | `WAYLAND.md` | +82 | Created Wayland documentation |
 | `OPENAI_ENDPOINTS.md` | +144 | Created endpoints documentation |
 
-**Total:** 272 lines added, 8 lines removed, 7 files changed
+**Total:** 258 lines added, 8 lines removed, 6 files changed
 
 ## Summary
 
@@ -145,6 +142,6 @@ Both requested features have been successfully implemented:
 
 ✅ **OpenAI-Compatible Endpoints**: Users can now clearly see that they can add any OpenAI-compatible endpoint including llama-swap, with comprehensive documentation and improved UI guidance.
 
-✅ **Wayland Support**: The application will now run natively under Wayland on Linux systems instead of using XWayland, with proper configuration and documentation.
+✅ **Wayland Support**: Observer has native Wayland support built-in through GTK. It automatically uses Wayland when running in a Wayland session, with proper documentation.
 
 The implementation is minimal, focused, and well-documented. No breaking changes were introduced, and the application maintains full backward compatibility while adding the requested functionality.

@@ -75,20 +75,17 @@ You can add multiple servers and enable/disable them as needed:
 
 Models from all **enabled** servers will appear in your model selector.
 
-## Linux: Running with Wayland
+## Linux: Wayland Support
 
-If you're on Linux with Wayland, Observer will automatically use native Wayland when installed via the .deb package.
+Observer automatically uses native Wayland on Linux when running in a Wayland session. No configuration is needed.
 
-To verify:
+To verify Observer is using Wayland (not XWayland):
 ```bash
 # Observer should NOT appear here (means it's using Wayland):
 xlsclients
 ```
 
-To run from command line with Wayland:
-```bash
-GDK_BACKEND=wayland ./observer
-```
+GTK (which Tauri uses) automatically detects your session type and uses the appropriate backend.
 
 ## More Information
 
