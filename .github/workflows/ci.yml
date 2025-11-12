@@ -1,0 +1,305 @@
+name: CI - Build and Test
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - '.github/workflows/ci.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - '.github/workflows/ci.yml'
+
+jobs:
+  lint-and-typecheck:
+    name: Lint and Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./app
+
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: ./app
+        continue-on-error: false
+
+      - name: Run TypeScript type check
+        run: npx tsc --noEmit
+        working-directory: ./app
+
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs: lint-and-typecheck
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./app
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: ./app
+
+      - name: Check build output
+        run: |
+          if [ ! -d "./dist" ]; then
+            echo "Error: dist directory not created"
+            exit 1
+          fi
+          echo "Build successful, dist directory created"
+        working-directory: ./app
+
+  build-tauri:
+    name: Build Tauri App
+    needs: lint-and-typecheck
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+
+      - name: Install Linux dependencies
+        if: matrix.platform.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri
+
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: ./app
+
+      - name: Build Tauri app (debug mode for faster CI)
+        run: npm run tauri build -- --debug
+        working-directory: ./app
+        env:
+          # Skip code signing for CI builds
+          TAURI_SIGNING_PRIVATE_KEY: ""
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
+
+      - name: Verify build artifacts
+        run: |
+          if [ "${{ matrix.platform.os }}" = "ubuntu-latest" ]; then
+            ls -lh ./app/src-tauri/target/debug/app || echo "Binary not found"
+          elif [ "${{ matrix.platform.os }}" = "macos-latest" ]; then
+            ls -lh ./app/src-tauri/target/debug/app || echo "Binary not found"
+          elif [ "${{ matrix.platform.os }}" = "windows-latest" ]; then
+            ls -lh ./app/src-tauri/target/debug/app.exe || echo "Binary not found"
+          fi
+        shell: bash
+
+  check-rust:
+    name: Check Rust Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libglib2.0-dev \
+            libgtk-3-dev \
+            libwebkit2gtk-4.1-dev \
+            libappindicator3-dev \
+            librsvg2-dev
+
+      - name: Setup Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: app/src-tauri
+
+      - name: Check Rust formatting
+        run: cargo fmt --all -- --check
+        working-directory: ./app/src-tauri
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+        working-directory: ./app/src-tauri
+
+      - name: Run Rust tests
+        run: cargo test --all-features
+        working-directory: ./app/src-tauri
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run cargo audit
+        uses: actions-rust-lang/audit@v1
+        with:
+          # Fail the build if vulnerabilities are found
+          denyWarnings: true
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        working-directory: ./app
+        continue-on-error: true
+
+  check-wayland-support:
+    name: Verify Wayland Support (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Wayland dependencies in Cargo.lock
+        run: |
+          echo "Checking for Wayland dependencies..."
+          if grep -q "wayland" app/src-tauri/Cargo.lock; then
+            echo "✓ Wayland dependencies found in Cargo.lock"
+            grep "name = \"wayland" app/src-tauri/Cargo.lock | head -5
+          else
+            echo "✗ No Wayland dependencies found"
+            exit 1
+          fi
+
+      - name: Check desktop file exists
+        run: |
+          if [ -f "app/src-tauri/Observer.desktop" ]; then
+            echo "✓ Desktop file exists"
+            cat app/src-tauri/Observer.desktop
+          else
+            echo "✗ Desktop file not found"
+            exit 1
+          fi
+
+      - name: Verify desktop file does not force GDK_BACKEND
+        run: |
+          if grep -q "GDK_BACKEND" app/src-tauri/Observer.desktop; then
+            echo "✗ Desktop file should not set GDK_BACKEND environment variable"
+            exit 1
+          else
+            echo "✓ Desktop file correctly relies on GTK auto-detection"
+          fi
+
+  check-openai-endpoints-ui:
+    name: Verify OpenAI Endpoints UI
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check ConnectionSettingsModal has correct text
+        run: |
+          echo "Checking for 'OpenAI-Compatible' in ConnectionSettingsModal..."
+          if grep -q "Custom OpenAI-Compatible API Servers" app/src/components/ConnectionSettingsModal.tsx; then
+            echo "✓ UI text correctly mentions OpenAI-compatible endpoints"
+          else
+            echo "✗ UI text missing OpenAI-compatible reference"
+            exit 1
+          fi
+
+      - name: Check for llama-swap example
+        run: |
+          if grep -q "llama-swap" app/src/components/ConnectionSettingsModal.tsx; then
+            echo "✓ UI includes llama-swap example"
+          else
+            echo "✗ UI missing llama-swap example"
+            exit 1
+          fi
+
+  summary:
+    name: CI Summary
+    runs-on: ubuntu-latest
+    needs: 
+      - lint-and-typecheck
+      - build-frontend
+      - build-tauri
+      - check-rust
+      - security-audit
+      - check-wayland-support
+      - check-openai-endpoints-ui
+    if: always()
+    steps:
+      - name: Check all jobs status
+        run: |
+          echo "CI Results Summary:"
+          echo "==================="
+          echo "Lint and Type Check: ${{ needs.lint-and-typecheck.result }}"
+          echo "Build Frontend: ${{ needs.build-frontend.result }}"
+          echo "Build Tauri: ${{ needs.build-tauri.result }}"
+          echo "Check Rust: ${{ needs.check-rust.result }}"
+          echo "Security Audit: ${{ needs.security-audit.result }}"
+          echo "Check Wayland Support: ${{ needs.check-wayland-support.result }}"
+          echo "Check OpenAI Endpoints UI: ${{ needs.check-openai-endpoints-ui.result }}"
+          
+          if [ "${{ needs.lint-and-typecheck.result }}" != "success" ] || \
+             [ "${{ needs.build-frontend.result }}" != "success" ] || \
+             [ "${{ needs.build-tauri.result }}" != "success" ] || \
+             [ "${{ needs.check-rust.result }}" != "success" ] || \
+             [ "${{ needs.security-audit.result }}" != "success" ] || \
+             [ "${{ needs.check-wayland-support.result }}" != "success" ] || \
+             [ "${{ needs.check-openai-endpoints-ui.result }}" != "success" ]; then
+            echo ""
+            echo "❌ One or more CI checks failed"
+            exit 1
+          else
+            echo ""
+            echo "✅ All CI checks passed"
+          fi

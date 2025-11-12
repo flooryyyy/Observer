@@ -10,6 +10,7 @@ Build powerful micro-agents that observe your digital world, remember what matte
 [![Download App](https://img.shields.io/badge/⬇️_Download-Latest_Release-blue?style=for-the-badge&color=2196F3)](https://github.com/Roy3838/Observer/releases/latest/)
 [![Support Project](https://img.shields.io/badge/☕_Support-Buy_Me_Coffee-blue?style=for-the-badge&color=FF9800)](https://buymeacoffee.com/roy3838)
 
+[![CI](https://github.com/flooryyyy/Observer/actions/workflows/ci.yml/badge.svg)](https://github.com/flooryyyy/Observer/actions/workflows/ci.yml)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-success)](https://roy3838.github.io/observer-ai)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -19,6 +20,8 @@ Build powerful micro-agents that observe your digital world, remember what matte
 ## 📚 Documentation
 - [OpenAI-Compatible Endpoints Guide](OPENAI_ENDPOINTS.md) - How to connect to Ollama, llama-swap, and other compatible APIs
 - [Wayland Support Guide](WAYLAND.md) - Running Observer natively under Wayland on Linux
+- [Testing Guide](TESTING.md) - How to build and test Observer locally
+- [CI/CD Documentation](.github/CI.md) - Automated testing and continuous integration
 
 ---
 
