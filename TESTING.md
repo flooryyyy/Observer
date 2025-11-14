@@ -39,26 +39,23 @@ npm install
 # Build for development (faster, for testing)
 npm run tauri dev
 
-# Build for production (.deb package)
-npm run tauri build -- --bundles deb
+# Build for production (AppImage)
+npm run tauri build -- --bundles appimage
 ```
 
-The production build will create a `.deb` file in:
+The production build will create an AppImage file in:
 ```
-app/src-tauri/target/release/bundle/deb/
+app/src-tauri/target/release/bundle/appimage/
 ```
 
-### 3. Install and Test the .deb Package
+### 3. Run the AppImage
 
 ```bash
-# Install the package
-sudo dpkg -i app/src-tauri/target/release/bundle/deb/observer_*.deb
+# Make it executable
+chmod +x app/src-tauri/target/release/bundle/appimage/observer_*.AppImage
 
-# If there are dependency issues
-sudo apt-get install -f
-
-# Run Observer
-observer
+# Run it
+./app/src-tauri/target/release/bundle/appimage/observer_*.AppImage
 ```
 
 ## Testing Checklist
@@ -161,14 +158,17 @@ sudo apt-get install libwebkit2gtk-4.1-dev \
 sudo apt-get install libgtk-3-dev
 ```
 
-### .deb package installation fails
+### AppImage doesn't run
 ```bash
-# Check for dependency issues
-sudo dpkg -i observer_*.deb
-# Note any missing dependencies
+# Make sure it's executable
+chmod +x observer_*.AppImage
 
-# Fix dependencies
-sudo apt-get install -f
+# Check for FUSE (required for AppImage)
+sudo apt-get install fuse libfuse2
+
+# If still having issues, extract and run directly
+./observer_*.AppImage --appimage-extract
+./squashfs-root/AppRun
 ```
 
 ## Automated Testing
@@ -200,14 +200,11 @@ Quick commands to verify the build:
 # Check the binary exists
 ls -lh app/src-tauri/target/release/app
 
-# Check the .deb package was created
-ls -lh app/src-tauri/target/release/bundle/deb/
+# Check the AppImage was created
+ls -lh app/src-tauri/target/release/bundle/appimage/
 
-# Check package contents
-dpkg -c app/src-tauri/target/release/bundle/deb/observer_*.deb
-
-# Check desktop entry is included
-dpkg -c app/src-tauri/target/release/bundle/deb/observer_*.deb | grep desktop
+# Check AppImage is executable
+file app/src-tauri/target/release/bundle/appimage/observer_*.AppImage
 ```
 
 ## Testing on Different Environments

@@ -7,7 +7,7 @@ cd app
 unset TAURI_SIGNING_PRIVATE_KEY
 unset TAURI_SIGNING_PRIVATE_KEY_PASSWORD
 
-npm run tauri build -- --bundles deb
+npm run tauri build -- --bundles appimage
 
 # Always try to run the binary if it exists
 if [ -f "./src-tauri/target/release/app" ]; then

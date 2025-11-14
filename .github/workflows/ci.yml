@@ -219,23 +219,14 @@ jobs:
             exit 1
           fi
 
-      - name: Check desktop file exists
+      - name: Verify AppImage bundle configuration
         run: |
-          if [ -f "app/src-tauri/Observer.desktop" ]; then
-            echo "✓ Desktop file exists"
-            cat app/src-tauri/Observer.desktop
+          echo "Checking for AppImage configuration in tauri.conf.json..."
+          if grep -q "appimage" app/src-tauri/tauri.conf.json; then
+            echo "✓ AppImage configuration found"
           else
-            echo "✗ Desktop file not found"
+            echo "✗ AppImage configuration not found in tauri.conf.json"
             exit 1
-          fi
-
-      - name: Verify desktop file does not force GDK_BACKEND
-        run: |
-          if grep -q "GDK_BACKEND" app/src-tauri/Observer.desktop; then
-            echo "✗ Desktop file should not set GDK_BACKEND environment variable"
-            exit 1
-          else
-            echo "✓ Desktop file correctly relies on GTK auto-detection"
           fi
 
   check-openai-endpoints-ui:

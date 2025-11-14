@@ -40,32 +40,32 @@ Verified and documented native Wayland support for Linux desktop environments. O
 
 **Changes Made:**
 
-#### Desktop Entry (`app/src-tauri/Observer.desktop`)
-Created a desktop entry file for proper .deb package integration:
-```desktop
-Exec=observer %u
-```
-
-The desktop entry allows Observer to be launched from application menus and ensures proper integration with the desktop environment.
-
 #### Tauri Configuration (`app/src-tauri/tauri.conf.json`)
-Added Linux bundle configuration to use the custom desktop template:
+Configured Linux bundle to build AppImage:
 ```json
 "linux": {
-  "deb": {
-    "desktopTemplate": "Observer.desktop"
+  "appimage": {
+    "files": {
+      "AppRun": "appimage/AppRun"
+    }
   }
 }
 ```
 
+AppImage packages work seamlessly with Wayland through GTK's automatic backend detection.
+
 #### Build Script (`build.sh`)
-No changes needed - Observer automatically uses Wayland when running in a Wayland session through GTK's auto-detection.
+Updated to build AppImage instead of .deb package:
+```bash
+npm run tauri build -- --bundles appimage
+```
+
+Observer automatically uses Wayland when running in a Wayland session through GTK's auto-detection.
 
 #### Documentation
 Created **WAYLAND.md** - A comprehensive guide covering:
 - What Wayland is and why it matters
 - How Observer supports Wayland through GTK
-- How to run from command line with Wayland
 - How to verify Wayland usage (not XWayland)
 - Fallback to X11 when needed
 - Troubleshooting tips
@@ -113,8 +113,8 @@ Created **WAYLAND.md** - A comprehensive guide covering:
 6. Verify models appear in model selector
 
 ### For Wayland Support:
-1. Install the .deb package on a Wayland system
-2. Launch Observer from application menu
+1. Build and run the AppImage on a Wayland system
+2. Launch Observer
 3. Verify it's using Wayland (not XWayland):
    ```bash
    # Observer should NOT appear in this list:
@@ -128,13 +128,10 @@ Created **WAYLAND.md** - A comprehensive guide covering:
 |------|--------------|---------|
 | `app/src/components/ConnectionSettingsModal.tsx` | +12, -3 | Enhanced UI labels and examples |
 | `README.md` | +15, -3 | Added docs links and endpoint examples |
-| `app/src-tauri/tauri.conf.json` | +6, -1 | Added Linux bundle config |
-| `app/src-tauri/Observer.desktop` | +11 | Created desktop entry for Linux |
-| `build.sh` | 0 | No changes (Wayland auto-detected) |
+| `app/src-tauri/tauri.conf.json` | Modified | AppImage bundle config |
+| `build.sh` | Modified | Build AppImage instead of .deb |
 | `WAYLAND.md` | +82 | Created Wayland documentation |
 | `OPENAI_ENDPOINTS.md` | +144 | Created endpoints documentation |
-
-**Total:** 258 lines added, 8 lines removed, 6 files changed
 
 ## Summary
 
@@ -142,6 +139,6 @@ Both requested features have been successfully implemented:
 
 ✅ **OpenAI-Compatible Endpoints**: Users can now clearly see that they can add any OpenAI-compatible endpoint including llama-swap, with comprehensive documentation and improved UI guidance.
 
-✅ **Wayland Support**: Observer has native Wayland support built-in through GTK. It automatically uses Wayland when running in a Wayland session, with proper documentation.
+✅ **Wayland Support**: Observer has native Wayland support built-in through GTK. It automatically uses Wayland when running in a Wayland session via AppImage, with proper documentation.
 
 The implementation is minimal, focused, and well-documented. No breaking changes were introduced, and the application maintains full backward compatibility while adding the requested functionality.
