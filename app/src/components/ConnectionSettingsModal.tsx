@@ -146,8 +146,11 @@ const ConnectionSettingsModal: React.FC<ConnectionSettingsModalProps> = ({
 
         {/* Custom Servers Section */}
         <div className="mt-4">
-          <h3 className="font-medium text-gray-700 mb-2">Custom Inference Servers</h3>
-          <p className="text-xs text-gray-500 mt-1">Warning: Manage CORS correctly with a proxy.</p>
+          <h3 className="font-medium text-gray-700 mb-2">Custom OpenAI-Compatible API Servers</h3>
+          <p className="text-xs text-gray-500 mt-1 mb-2">
+            Add any OpenAI-compatible API endpoint (Ollama, llama.cpp, vLLM, LM Studio, llama-swap, etc.)
+          </p>
+          <p className="text-xs text-gray-500 mt-1">Note: Manage CORS correctly with a proxy if needed.</p>
 
           {/* Custom servers list */}
           {customServers.length > 0 && (
@@ -224,10 +227,13 @@ const ConnectionSettingsModal: React.FC<ConnectionSettingsModalProps> = ({
                   setNewServerAddress(e.target.value);
                   setAddError('');
                 }}
-                placeholder="http://192.168.1.100:8080"
+                placeholder="e.g., http://localhost:8080 or https://api.example.com"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 autoFocus
               />
+              <p className="text-xs text-gray-500 mb-2">
+                Examples: Ollama (http://localhost:11434), vLLM, LM Studio, llama-swap
+              </p>
               {addError && (
                 <p className="text-xs text-red-500 mb-2">{addError}</p>
               )}

@@ -10,11 +10,18 @@ Build powerful micro-agents that observe your digital world, remember what matte
 [![Download App](https://img.shields.io/badge/⬇️_Download-Latest_Release-blue?style=for-the-badge&color=2196F3)](https://github.com/Roy3838/Observer/releases/latest/)
 [![Support Project](https://img.shields.io/badge/☕_Support-Buy_Me_Coffee-blue?style=for-the-badge&color=FF9800)](https://buymeacoffee.com/roy3838)
 
+[![CI](https://github.com/flooryyyy/Observer/actions/workflows/ci.yml/badge.svg)](https://github.com/flooryyyy/Observer/actions/workflows/ci.yml)
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-success)](https://roy3838.github.io/observer-ai)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## 🔗 Links
  [Website](https://observer-ai.com) | [WebApp](https://app.observer-ai.com) | [YouTube](https://www.youtube.com/@Observer-AI) | [Tiktok](https://www.tiktok.com/@observerai) | [Twitter](https://x.com/AppObserverAI)
+
+## 📚 Documentation
+- [OpenAI-Compatible Endpoints Guide](OPENAI_ENDPOINTS.md) - How to connect to Ollama, llama-swap, and other compatible APIs
+- [Wayland Support Guide](WAYLAND.md) - Running Observer natively under Wayland on Linux
+- [Testing Guide](TESTING.md) - How to build and test Observer locally
+- [CI/CD Documentation](.github/CI.md) - Automated testing and continuous integration
 
 ---
 
@@ -216,7 +223,7 @@ if(response.includes("word")){
 
 There are a few ways to get Observer up and running with local inference. I recommend the Observer App. 
 
-## Option 1: Just Install the Desktop App with any OpenAI compatible endpoint (Ollama, llama.cpp, vLLM)
+## Option 1: Just Install the Desktop App with any OpenAI compatible endpoint (Ollama, llama.cpp, vLLM, llama-swap)
 
 Download the Official App:
 
@@ -224,8 +231,14 @@ Download the Official App:
 
 Download Ollama for the best compatibility. Observer can connect directly to any server that provides a `v1/chat/completions` endpoint.
 
-### vLLM, llama.cpp, LMStudio etc: 
-Set the `Custom Model Server URL` on the App to any OpenAI compatible endpoint if not using Ollama.
+### vLLM, llama.cpp, LMStudio, llama-swap, etc: 
+Set the `Custom OpenAI-Compatible API Server` on the App to any OpenAI compatible endpoint if not using Ollama. The app supports any service that implements the OpenAI API format, including:
+- **Ollama** (http://localhost:11434)
+- **llama.cpp server** 
+- **vLLM**
+- **LM Studio**
+- **llama-swap**
+- Any other OpenAI-compatible inference server
 
 NOTE: Your browser app sends the request to `localhost:3838` which the ObserverApp proxies to your `Custom Model Server URL`, this is because of CORS. 
 
