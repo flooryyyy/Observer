@@ -191,13 +191,13 @@ App Tools:
 ## Code Tab
 
 The "Code" tab receives the following variables as context before running: 
-* `prompt` - The model's prompt
 * `response` - The model's response
 * `agentId` - The id of the agent running the code
-* `screen` - The screen as base64 if captured 
-* `camera` - The camera as base64 if captured 
-* `imemory` - The agent's current image array
-* `images` - All images in context
+* `screen` - The screen if captured 
+* `camera` - The camera if captured 
+* `imemory` - The agent's current image in memory
+* `images` - All images sent to the model 
+* `prompt` - The model's prompt
 
 JavaScript agents run in the browser sandbox, making them ideal for passive monitoring and notifications:
 
@@ -225,7 +225,29 @@ There are a few ways to get Observer up and running with local inference. I reco
 
 ## Option 1: Just Install the Desktop App with any OpenAI compatible endpoint (Ollama, llama.cpp, vLLM, llama-swap)
 
-Download the Official App:
+[![Download App](https://img.shields.io/badge/⬇️_Download-Latest_Release-blue?style=for-the-badge&color=2196F3)](https://github.com/Roy3838/Observer/releases/latest/)
+
+Download Ollama for the best compatibility.
+
+> **Linux/Wayland Users:** The AppImage now includes native Wayland support! The application will automatically detect and use Wayland when available, falling back to X11 if needed. No additional configuration required. 
+
+Observer can connect directly to any server that provides a `v1/chat/completions` endpoint.
+Set the `Custom Model Server URL` on the App to vLLM, llama.cpp or any OpenAI compatible endpoint if not using Ollama.
+
+## Option 2: Full Docker Setup (Deprecated)
+
+https://github.com/user-attachments/assets/c5af311f-7e10-4fde-9321-bb98ceebc271
+
+
+> ✨ **Major Update: Simpler Setup & More Flexibility!**
+> The `observer-ollama` service no longer requires SSL by default. This means **no more browser security warnings** for a standard local setup! It now also supports any backend that uses a standard OpenAI-compatible (`v1/chat/completions`) endpoint, like Llama.cpp.
+
+
+This method uses Docker Compose to run everything you need in containers: the Observer WebApp, the `observer-ollama` translator, and a local Ollama instance. This is the easiest way to get a 100% private, local-first setup.
+
+**Prerequisites:**
+*   [Docker](https://docs.docker.com/get-docker/) installed.
+*   [Docker Compose](https://docs.docker.com/compose/install/) installed.
 
 [![Download App](https://img.shields.io/badge/⬇️_Download-Latest_Release-blue?style=for-the-badge&color=2196F3)](https://github.com/Roy3838/Observer/releases/latest/)
 
