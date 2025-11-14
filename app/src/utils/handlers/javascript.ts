@@ -5,6 +5,7 @@ import { Logger } from '../logging';
 import { startAgentLoop, stopAgentLoop } from '../main_loop';
 import type { TokenProvider } from '../main_loop';
 import type { PreProcessorResult } from '../pre-processor';
+import { getAgentImageMemory } from '../agent_database';
 
 // Helper function to extract error messages properly
 function extractErrorMessage(error: any): string {
@@ -26,14 +27,18 @@ export async function executeJavaScript(
   getToken?: TokenProvider,
   preprocessResult?: PreProcessorResult
 ): Promise<boolean> {
+  // Fetch current agent's image memory to make it always available
+  const currentAgentImageMemory = await getAgentImageMemory(agentId);
+
   const context = {
+      prompt: preprocessResult?.modifiedPrompt || "",
       response,
       agentId,
       // Image variables from preprocessing
       images: preprocessResult?.images || [],
       screen: preprocessResult?.imageSources?.screen ? [preprocessResult.imageSources.screen] : [],
       camera: preprocessResult?.imageSources?.camera ? [preprocessResult.imageSources.camera] : [],
-      imemory: preprocessResult?.imageSources?.imemory || [],
+      imemory: currentAgentImageMemory,
       getMemory: async (targetId = agentId) => {
         try {
           const result = await utils.getMemory(targetId);
@@ -353,18 +358,9 @@ export async function executeJavaScript(
 
       sendDiscord: async (webhookUrl: string, message: string, images?: string[]) => {
         try {
-          if (!getToken) {
-              throw new Error("Authentication context not available for sendDiscord.");
-          }
-
-          const token = await getToken();
-          if (!token) {
-              throw new Error("Failed to retrieve authentication token for sendDiscord.");
-          }
-
-          await utils.sendDiscord(message, webhookUrl, token, images);
-          Logger.info(agentId, `Discord notification sent${images && images.length > 0 ? ` with ${images.length} images` : ''}`, { 
-            logType: 'tool-success', 
+          await utils.sendDiscord(message, webhookUrl, images);
+          Logger.info(agentId, `Discord notification sent${images && images.length > 0 ? ` with ${images.length} images` : ''}`, {
+            logType: 'tool-success',
             iterationId,
             content: { tool: 'sendDiscord', params: { message: message.slice(0,100), imageCount: images?.length || 0 }, success: true }
           });

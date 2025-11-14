@@ -109,16 +109,16 @@ function AppContent() {
   // --- STATE FOR QUOTA INFO ---
   const [quotaInfo, setQuotaInfo] = useState<{
     used: number;
-    remaining: number | 'unlimited';
-    limit: number | 'unlimited';
-    pro_status: boolean;
+    remaining: number;
+    limit: number;
+    tier: string;
   } | null>(null);
 
   // --- STATE FOR MOBILE SIDEBAR ---
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // --- DERIVED STATE ---
-  const isProUser = quotaInfo?.pro_status === true;
+  const isProUser = quotaInfo?.tier === 'pro' || quotaInfo?.tier === 'max';
 
   const fetchAgents = useCallback(async () => {
     try {
@@ -691,9 +691,11 @@ function AppContent() {
           </div>
 
           {/* Models Tab */}
-          <div className={`px-4 ${activeTab !== 'models' ? 'hidden' : ''}`}>
-            <AvailableModels isProUser={isProUser} />
-          </div>
+          {activeTab === 'models' && (
+            <div className="px-4">
+              <AvailableModels isProUser={isProUser} />
+            </div>
+          )}
 
           {/* Recordings Tab */}
           <div className={`px-4 ${activeTab !== 'recordings' ? 'hidden' : ''}`}>

@@ -13,34 +13,69 @@ Build powerful micro-agents that observe your digital world, remember what matte
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Deployed-success)](https://roy3838.github.io/observer-ai)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+## 🔗 Links
+ [Website](https://observer-ai.com) | [WebApp](https://app.observer-ai.com) | [YouTube](https://www.youtube.com/@Observer-AI) | [Tiktok](https://www.tiktok.com/@observerai) | [Twitter](https://x.com/AppObserverAI)
+
 ---
 
-## 👁️ Observer Agents See
+## 👁️ How Observer Agents Work
+
+<div align="center">
 
 <table>
 <tr>
-<td align="center" width="25%">
-<img src="https://img.icons8.com/fluency/96/000000/monitor.png" width="64" height="64" alt="Screen"/>
-<br><strong>Screen</strong>
-<br><sub>OCR & Vision</sub>
+<td align="center" valign="top" width="33%">
+
+### Sensors →
+
 </td>
-<td align="center" width="25%">
-<img src="https://img.icons8.com/fluency/96/000000/camera.png" width="64" height="64" alt="Camera"/>
-<br><strong>Camera</strong>
-<br><sub>Visual Input</sub>
+<td align="center" valign="top" width="33%">
+
+### Models →
+
 </td>
-<td align="center" width="25%">
-<img src="https://img.icons8.com/fluency/96/000000/microphone.png" width="64" height="64" alt="Audio"/>
-<br><strong>Audio</strong>
-<br><sub>Mic + Computer</sub>
+<td align="center" valign="top" width="33%">
+
+### Tools
+
 </td>
-<td align="center" width="25%">
-<img src="https://img.icons8.com/fluency/96/000000/brain.png" width="64" height="64" alt="Memory"/>
-<br><strong>Memory</strong>
-<br><sub>Text + Image</sub>
+</tr>
+<tr>
+<td align="center" valign="middle" width="33%">
+
+<img src="https://img.icons8.com/fluency/96/monitor.png" width="48" height="48" alt="Screen"/>
+<img src="https://img.icons8.com/fluency/96/camera.png" width="48" height="48" alt="Camera"/>
+<img src="https://img.icons8.com/fluency/96/microphone.png" width="48" height="48" alt="Mic"/>
+<img src="https://img.icons8.com/fluency/96/speaker.png" width="48" height="48" alt="Audio"/>
+
+<br><sub>Screen • Camera • Mic • Audio</sub>
+
+</td>
+<td align="center" valign="middle" width="33%">
+
+<img src="https://img.icons8.com/fluency/96/brain.png" width="64" height="64" alt="AI Brain"/>
+
+<br><sub>Local LLMs</sub>
+
+</td>
+<td align="center" valign="middle" width="33%">
+
+<img src="https://cdn.simpleicons.org/whatsapp/25D366" width="40" height="40" alt="WhatsApp"/>
+<img src="https://cdn.simpleicons.org/discord/5865F2" width="40" height="40" alt="Discord"/>
+<img src="https://cdn.simpleicons.org/telegram/26A5E4" width="40" height="40" alt="Telegram"/>
+<img src="https://cdn.simpleicons.org/iMessage/0084FF" width="40" height="40" alt="SMS"/>
+<img src="https://img.icons8.com/fluency/96/note.png" width="40" height="40" alt="Memory"/>
+<img src="https://img.icons8.com/fluency/96/code.png" width="40" height="40" alt="Code"/>
+
+<br><sub>Messaging • Notifications • Recording • Memory • Code</sub>
+
 </td>
 </tr>
 </table>
+
+<br>
+
+</div>
 
 </div>
 
@@ -55,13 +90,10 @@ Build powerful micro-agents that observe your digital world, remember what matte
 ### 📊 **Intelligent Logging**
 
 🧠 **Text & Visual Memory**
-Store and retrieve images or text intelligently.
 
 🎥 **Smart Screen Recording**
-Start recording when something happens or analyze clips with custom labels
 
-💾 **Persistent Context**
-Agents remember what matters across sessions
+💾 **Inteligent Context**
 
 </td>
 <td width="50%" valign="top">
@@ -81,23 +113,17 @@ Custom on-screen messages
 </tr>
 </table>
 
-<div align="center">
+---
 
-### *Build local agents that don't just watch—they **understand**, **remember**, and **act** intelligently on your behalf.*
+## 🎬 Quick Demo: Security Agent
 
-</div>
+[![Security Agent Demo](https://img.youtube.com/vi/jsjr_zRWXG4/0.jpg)](https://www.youtube.com/watch?v=jsjr_zRWXG4)
 
-## 📹 Why Observer AI?
-
-<div align="center">
-
-[![Observer AI Demo](https://img.youtube.com/vi/i5WDvQy0XJA/0.jpg)](https://www.youtube.com/watch?v=i5WDvQy0XJA)
-
-</div>
+---
 
 # 🏗️ Building Your Own Agent
 
-Creating your own Observer AI agent is simple, and consist of three things:
+Creating your own Observer AI consist of three things:
 
 * SENSORS - input that your model will have
 * MODELS - models run by ollama or by Ob-Server
@@ -152,17 +178,19 @@ App Tools:
   * `overlay(body)` - Pushes a message to the overlay
   * `click()` - Triggers a mouse click at the current cursor position ⚠️IMPORTANT: Position mouse before agent runs
 
-
+> **Note:** any function marked with `*` takes an `agentId` argument.  
+> If you omit `agentId`, it defaults to the agent that’s running the code.
 
 ## Code Tab
 
 The "Code" tab receives the following variables as context before running: 
-`response` - The model's response
-`agentId` - The id of the agent running the code
-`screen` - The screen as base64 if captured 
-`camera` - The camera as base64 if captured 
-`imemory` - The agent's current image array
-`images` - All images in context
+* `response` - The model's response
+* `agentId` - The id of the agent running the code
+* `screen` - The screen if captured 
+* `camera` - The camera if captured 
+* `imemory` - The agent's current image in memory
+* `images` - All images sent to the model 
+* `prompt` - The model's prompt
 
 JavaScript agents run in the browser sandbox, making them ideal for passive monitoring and notifications:
 
@@ -176,12 +204,12 @@ const time = time();
 // Update memory with timestamp
 appendMemory(`[${time}] ${cleanedResponse}`);
 
-// Send to Telegram for notekeeping
-sendTelegram(cleanedResponse, "12345678") // Example chat_id
+// Send to Telegram if the model mentions a word
+if(response.includes("word")){
+  sendTelegram(cleanedResponse, "12345678") // Example chat_id
+}
 ```
 
-> **Note:** any function marked with `*` takes an `agentId` argument.  
-> If you omit `agentId`, it defaults to the agent that’s running the code.
 
 # 🚀 Getting Started with Local Inference
 
@@ -214,89 +242,29 @@ This method uses Docker Compose to run everything you need in containers: the Ob
 *   [Docker](https://docs.docker.com/get-docker/) installed.
 *   [Docker Compose](https://docs.docker.com/compose/install/) installed.
 
-**Instructions:**
+[![Download App](https://img.shields.io/badge/⬇️_Download-Latest_Release-blue?style=for-the-badge&color=2196F3)](https://github.com/Roy3838/Observer/releases/latest/)
 
-1.  **Clone the repository and start the services:**
-    ```bash
-    git clone https://github.com/Roy3838/Observer.git
-    cd Observer/docker
-    docker-compose up --build
-    ```
+Download Ollama for the best compatibility. Observer can connect directly to any server that provides a `v1/chat/completions` endpoint.
 
-2.  **Access the Local WebApp:**
-    *   Open your browser to **`http://localhost:8080`**. This is your self-hosted version of the Observer app.
+### vLLM, llama.cpp, LMStudio etc: 
+Set the `Custom Model Server URL` on the App to any OpenAI compatible endpoint if not using Ollama.
 
-3.  **Connect to your Ollama service:**
-    *   In the app's header/settings, set the Model Server Address to **`http://localhost:3838`**. This is the `observer-ollama` translator that runs in a container and communicates with Ollama for you.
-
-4.  **Pull Ollama Models:**
-    *   Navigate to the "Models" tab and click "Add Model". This opens a terminal to your Ollama instance.
-    *   Pull any model you need, for example:
-        ```bash
-        ollama run gemma3:4b # <- highly recommended model!
-        ```
-        
-For NVIDIA GPUs: it's recommended to edit `docker/docker-compose.yml` and explicitly add gpu runtime to the ollama docker container.
-Add these to the ollama section of `docker/docker-compose.yml`:
-```
-    volumes:
-      - ollama_data:/root/.ollama
-    # ADD THIS SECTION
-    runtime: nvidia
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    # UP TO HERE
-    ports:
-      - "11434:11434"
-```
-
-**To Stop the Docker Setup:**
-```bash
-cd docker && docker-compose down
-```
-
----
-### ⚙️ Configuration (Docker)
-
-To customize your setup (e.g., enable SSL to access from `app.observer-ai.com`, disabling docker exec feature), simply edit the `environment:` section in your `docker/docker-compose.yml` file. All options are explained with comments directly in the file.
+NOTE: Your browser app sends the request to `localhost:3838` which the ObserverApp proxies to your `Custom Model Server URL`, this is because of CORS. 
 
 
-### Setting Up Python (Jupyter Server)
+## Option 2: Full Docker Setup (Deprecated)
 
-Python agents run on a Jupyter server with system-level access, enabling them to interact directly with your computer:
+For Docker setup instructions, see [docker/DOCKER.md](docker/DOCKER.md).
 
-```python
-#python <-- don't remove this!
-print("Hello World!", response, agentId)
 
-# Example: Analyze screen content and take action
-if "SHUTOFF" in response:
-    # System level commands can be executed here
-    import os
-    # os.system("command")  # Be careful with system commands!
-```
+### Setting Up Python (Jupyter Server) 
 
-## Jupyter Server Configuration
-
-To use Python agents:
-
-1. Run a Jupyter server on your machine with c.ServerApp.allow_origin = '*'
-2. Configure the connection in the Observer AI interface:
-   * Host: The server address (e.g., 127.0.0.1)
-   * Port: The server port (e.g., 8888)
-   * Token: Your Jupyter server authentication token
-3. Test the connection using the "Test Connection" button
-4. Switch to the Python tab in the code editor to write Python-based agents
+For Jupyter server setup instructions, see [app/JUPYTER.md](app/JUPYTER.md).
 
 
 ## Deploy & Share
 
-Save your agent, test it from the dashboard, and export the configuration to share with others!
+Save your agent, test it from the dashboard, and upload to community to share with others!
 
 ## 🤝 Contributing
 
@@ -312,16 +280,6 @@ We welcome contributions from the community! Here's how you can help:
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🔗 Links
-
-- [Website](https://observer-ai.com)
-- [GitHub Repository](https://github.com/Roy3838/Observer)
-- [twitter](https://x.com/AppObserverAI)
-
-## 📧 Contact
-
-- GitHub: [@Roy3838](https://github.com/Roy3838)
-- Project Link: [https://observer-ai.com](https://observer-ai.com)
 
 ---
 
