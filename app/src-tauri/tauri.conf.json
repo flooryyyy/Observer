@@ -39,7 +39,14 @@
     ],
     "resources": [
       "../dist"
-    ]
+    ],
+    "linux": {
+      "appimage": {
+        "files": {
+          "AppRun": "appimage/AppRun"
+        }
+      }
+    }
   },
   "plugins": {
     "updater": {
