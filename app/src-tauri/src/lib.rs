@@ -2,14 +2,14 @@
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod commands;
+mod controls;
 mod notifications;
 mod overlay;
 mod shortcuts;
-mod commands;
-mod controls;
 
 // Import unified shortcut types
-use shortcuts::{UnifiedShortcutState, UnifiedShortcutConfig};
+use shortcuts::{UnifiedShortcutConfig, UnifiedShortcutState};
 
 // ---- Final, Corrected Imports ----
 use axum::{
@@ -67,7 +67,6 @@ struct CommandState {
     // SSE broadcast channel for real-time commands
     command_broadcaster: broadcast::Sender<CommandMessage>,
 }
-
 
 #[tauri::command]
 async fn set_ollama_url(
@@ -141,7 +140,9 @@ async fn check_ollama_servers(urls: Vec<String>) -> Result<Vec<String>, String> 
 }
 
 #[tauri::command]
-async fn get_overlay_messages(overlay_state: State<'_, OverlayState>) -> Result<Vec<OverlayMessage>, String> {
+async fn get_overlay_messages(
+    overlay_state: State<'_, OverlayState>,
+) -> Result<Vec<OverlayMessage>, String> {
     log::info!("Getting overlay messages");
     let messages = overlay_state.messages.lock().unwrap().clone();
     Ok(messages)
@@ -154,19 +155,20 @@ async fn clear_overlay_messages(
 ) -> Result<(), String> {
     log::info!("Clearing overlay messages");
     overlay_state.messages.lock().unwrap().clear();
-    
+
     // Emit event to notify frontend of cleared messages
     let empty_messages: Vec<OverlayMessage> = vec![];
     if let Err(e) = app_handle.emit("overlay-messages-updated", &empty_messages) {
-        log::warn!("Failed to emit overlay-messages-updated event after clear: {}", e);
+        log::warn!(
+            "Failed to emit overlay-messages-updated event after clear: {}",
+            e
+        );
     } else {
         log::debug!("Emitted overlay-messages-updated event with 0 messages after clear");
     }
-    
+
     Ok(())
 }
-
-
 
 // Shortcut commands moved to shortcuts module
 
@@ -290,14 +292,29 @@ fn start_static_server(app_handle: tauri::AppHandle) {
                     "pong"
                 }),
             )
-            .route("/message", axum::routing::post(notifications::message_handler))
-            .route("/notification", axum::routing::post(notifications::notification_handler))
+            .route(
+                "/message",
+                axum::routing::post(notifications::message_handler),
+            )
+            .route(
+                "/notification",
+                axum::routing::post(notifications::notification_handler),
+            )
             .route("/overlay", axum::routing::post(overlay::overlay_handler))
             .route("/click", axum::routing::post(controls::click_handler))
-            .route("/commands-stream", axum::routing::get(commands::commands_stream_handler))
+            .route(
+                "/commands-stream",
+                axum::routing::get(commands::commands_stream_handler),
+            )
             // Legacy HTTP endpoints (for backward compatibility during migration)
-            .route("/commands", axum::routing::get(commands::get_commands_handler))
-            .route("/commands", axum::routing::post(commands::post_commands_handler))
+            .route(
+                "/commands",
+                axum::routing::get(commands::get_commands_handler),
+            )
+            .route(
+                "/commands",
+                axum::routing::post(commands::post_commands_handler),
+            )
             .fallback_service(ServeDir::new(resource_path))
             .with_state(state)
             .layer(cors);
@@ -368,7 +385,7 @@ pub fn run() {
                             "A new version ({}) of Observer is available. Would you like to install it now and restart?",
                             update.version
                         );
-                        
+
                         // Use the new non-blocking dialog with a callback
                         handle.dialog().message(question)
                             .title("Update Available")
@@ -377,7 +394,7 @@ pub fn run() {
                             .show(move |answer_is_yes| {
                                 if answer_is_yes {
                                     log::info!("User agreed to update. Downloading and installing...");
-                                    
+
                                     // We need a new async runtime to run the update download within the callback
                                     let update_handle = handle.clone();
                                     tauri::async_runtime::spawn(async move {
@@ -478,14 +495,14 @@ pub fn run() {
             .build() {
                 Ok(window) => {
                     log::info!("Overlay window created successfully with content protection");
-                    
+
                     // Explicitly set content protection after window creation
                     if let Err(e) = window.set_content_protected(true) {
                         log::warn!("Could not set content protection on overlay window: {}", e);
                     } else {
                         log::info!("Content protection explicitly enabled on overlay window");
                     }
-                    
+
                     // Make the window draggable by setting it as focusable
                     if let Err(e) = window.set_focus() {
                         log::warn!("Could not focus overlay window: {}", e);
@@ -503,10 +520,10 @@ pub fn run() {
                 let loaded_config = shortcuts::load_config_from_disk(app.handle());
                 let shortcut_state = app.state::<UnifiedShortcutState>();
                 *shortcut_state.config.lock().unwrap() = loaded_config;
-                
+
                 shortcuts::register_shortcuts_on_startup(app)?;
             }
-            
+
             #[cfg(not(desktop))]
             {
                 log::info!("Global shortcuts not available on this platform");
